@@ -203,3 +203,32 @@ describe('getData', () => {
   });
 
 });
+
+describe('toBluejayStartupMelody', () => {
+
+  const rtttl="A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#";
+
+  it('should return an object with startupMelody and errorCodes as members', () => {
+    let result = rtttlParse.toBluejayStartupMelody(rtttl);
+    expect(result).to.be.an('object');
+    expect(result.data).to.be.an('Uint8Array');
+    expect(result.data.length).to.equal(128);
+    expect(result.data[1]).to.equal(125);
+    expect(result.data[2]).to.equal(5);
+    expect(result.data[3]).to.equal(8);
+    expect(result.errorCodes).to.be.an('Array');
+  });
+
+});
+
+describe('fromBluejayStartupMelody', () => {
+
+  const rtttl="Melody:b=112,o=5,d=4:32c,8d.,16f.,16p.,8f,32d,16e.,8d,8c,8a4,8d.,16g.,16p.,8g";
+
+  it('should return an object with startupMelody and errorCodes as members', () => {
+    let result = rtttlParse.fromBluejayStartupMelody(rtttlParse.toBluejayStartupMelody(rtttl).data);
+    expect(result).to.be.an('string');
+    expect(result.split(':')[2]).to.equal(rtttl.split(':')[2]);
+  });
+
+});
