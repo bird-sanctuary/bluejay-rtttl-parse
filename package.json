@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "commit": "git-cz",
-    "test": "mocha src/index.test.js",
+    "test": "mocha src/index.test.js --require esm",
     "check-coverage": "nyc npm run test",
     "report-coverage": "cat ./coverage/lcov.info | codecov",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
@@ -20,6 +20,7 @@
     "nokia"
   ],
   "files": [
+    "src/index.js",
     "README.md"
   ],
   "author": "Dinesh Manajipet <saidinesh5@gmail.com> (https://github.com/adamonsoon)",
@@ -33,6 +34,7 @@
     "codecov": "3.8.1",
     "commitizen": "2.9.6",
     "cz-conventional-changelog": "2.0.0",
+    "esm": "^3.2.25",
     "ghooks": "2.0.4",
     "mocha": "3.2.0",
     "nyc": "15.1.0",

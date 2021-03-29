@@ -1,8 +1,6 @@
-"use strict";
-
-const expect     = require('chai').expect;
-const sinon      = require('sinon');
-const rtttlParse = require('./index.js');
+import { expect } from 'chai';
+import sinon from 'sinon';
+import rtttlParse from './index.js';
 
 describe('parse', () => {
 
