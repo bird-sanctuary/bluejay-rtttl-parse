@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "commit": "git-cz",
-    "test": "mocha src/index.test.js",
-    "check-coverage": "nyc npm run test",
+    "test": "mocha src/index.test.js --require esm",
+    "check-coverage": "c8 --reporter=text --reporter=lcov npm run test",
     "report-coverage": "cat ./coverage/lcov.info | codecov",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -20,6 +20,7 @@
     "nokia"
   ],
   "files": [
+    "src/index.js",
     "README.md"
   ],
   "author": "Dinesh Manajipet <saidinesh5@gmail.com> (https://github.com/adamonsoon)",
@@ -29,13 +30,14 @@
   },
   "homepage": "https://github.com/saidinesh5/bluejay-rtttl-parse#readme",
   "devDependencies": {
+    "c8": "^7.6.0",
     "chai": "3.5.0",
     "codecov": "3.8.1",
     "commitizen": "2.9.6",
     "cz-conventional-changelog": "2.0.0",
+    "esm": "^3.2.25",
     "ghooks": "2.0.4",
     "mocha": "3.2.0",
-    "nyc": "15.1.0",
     "semantic-release": "^17.4.2",
     "sinon": "^10.0.0"
   },
@@ -44,7 +46,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "npm run test && npm run check-coverage"
+      "pre-commit": "npm run check-coverage"
     }
   }
 }
