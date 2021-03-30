@@ -50,8 +50,8 @@ static parse(rtttl) {
  * @param {string} rtttl - RTTTL String
  * @param {int} startupMelodyLength - Bluejay Temp4,Temp3 array length. If unspecified, it is assumed to be 128 bytes
  * @returns an object {
- *     "startupMelodyData": [] , // An array of (Number of pulses, Pulse width) tuples for each note of rtttl
- *     "errorCodes": [] // An array of errors encountered while processing each note of rtttl
+ *     data: [] , // An array of (Number of pulses, Pulse width) tuples for each note of rtttl
+ *     errorCodes: [] // An array of errors encountered while processing each note of rtttl
  * }
  *
  * Startup melody data structure is:
@@ -70,7 +70,7 @@ static toBluejayStartupMelody(rtttl, startupMelodyLength) {
   startupMelodyLength = startupMelodyLength || 128;
 
   if (startupMelodyLength < 4) {
-    throw new Error("startupMelodyLength is too small to fit a Bluejay Startup Melody");
+    throw new Error('startupMelodyLength is too small to fit a Bluejay Startup Melody');
   }
 
   // Melody is basically an array of [{ duration(in ms): number, frequency (in Hz): number }]
@@ -114,7 +114,7 @@ static toBluejayStartupMelody(rtttl, startupMelodyLength) {
           errorCodes[currentMelodyIndex] = 0;
         }
       } else {
-          console.warn("Skipping note of frequency: ", item.frequency)
+          console.warn('Skipping note of frequency: ', item.frequency)
           errorCodes[currentMelodyIndex] = 1;
       }
     } else {
@@ -146,9 +146,9 @@ static toBluejayStartupMelody(rtttl, startupMelodyLength) {
   }
 
   return {
-    "data": result,
-    "errorCodes": errorCodes
-  }
+    data: result,
+    errorCodes: errorCodes
+  };
 
 }
 
@@ -161,10 +161,10 @@ static toBluejayStartupMelody(rtttl, startupMelodyLength) {
  */
 static fromBluejayStartupMelody(startupMelodyData, melodyName) {
 
-  melodyName = melodyName || "Melody"
+  melodyName = melodyName || 'Melody';
 
   if (startupMelodyData.length < 4) {
-    return melodyName + "Melody:d=1,o=4,bpm=100:";
+    return melodyName + 'Melody:d=1,o=4,bpm=100:';
   }
 
   let defaults = {
@@ -207,7 +207,7 @@ static fromBluejayStartupMelody(startupMelodyData, melodyName) {
   let quantizedDuration = (duration) => Math.round(duration/sixtyFourthNoteDuration)*sixtyFourthNoteDuration;
   let rttlDuration = (musicalDuration) => Math.pow(2, -Math.floor(Math.log2(musicalDuration)));
 
-  let melodyString = ''
+  let melodyString = '';
   for (var item of melodyNotes) {
     item.musicalDuration = quantizedDuration(item.duration)/fullNoteDuration;
 
@@ -223,7 +223,7 @@ static fromBluejayStartupMelody(startupMelodyData, melodyName) {
     }
   }
 
-  return melodyName + ':b='+defaults.bpm+',o='+defaults.octave+',b=' + defaults.duration +':' + melodyString.replace(/,$/, '')
+  return melodyName + ':b='+defaults.bpm+',o='+defaults.octave+',b=' + defaults.duration +':' + melodyString.replace(/,$/, '');
 }
 
 
@@ -412,11 +412,10 @@ static _calculateNoteNameFromFrequency(freq) {
 
     const C4           = 261.63;
     const NOTE_ORDER          = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
-    const MIDDLE_OCTAVE       = 4;
     const SEMITONES_IN_OCTAVE = 12;
-    const noteSemitones = Math.round(12 * Math.log2(freq/C4))
+    const noteSemitones = Math.round(SEMITONES_IN_OCTAVE * Math.log2(freq/C4))
 
-    return NOTE_ORDER[noteSemitones % 12]
+    return NOTE_ORDER[noteSemitones % SEMITONES_IN_OCTAVE]
 }
 
 /**
@@ -435,7 +434,7 @@ static _calculateNoteOctaveFromFrequency(freq) {
     const MIDDLE_OCTAVE       = 4;
     const SEMITONES_IN_OCTAVE = 12;
 
-    let noteSemitones = Math.round(12 * Math.log2(freq/C4))
+    let noteSemitones = Math.round(SEMITONES_IN_OCTAVE * Math.log2(freq/C4))
     let noteOctave = MIDDLE_OCTAVE + Math.floor(noteSemitones/SEMITONES_IN_OCTAVE)
 
     return noteOctave
