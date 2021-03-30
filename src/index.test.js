@@ -207,14 +207,30 @@ describe('toBluejayStartupMelody', () => {
   const rtttl="A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#";
 
   it('should return an object with startupMelody and errorCodes as members', () => {
-    let result = rtttlParse.toBluejayStartupMelody(rtttl);
+    const startupMelodyLength = 64;
+    let result = rtttlParse.toBluejayStartupMelody(rtttl, startupMelodyLength);
     expect(result).to.be.an('object');
     expect(result.data).to.be.an('Uint8Array');
-    expect(result.data.length).to.equal(128);
+    expect(result.data.length).to.equal(startupMelodyLength);
     expect(result.data[1]).to.equal(125);
     expect(result.data[2]).to.equal(5);
     expect(result.data[3]).to.equal(8);
+    expect(result.data.reduce((result, value) => result && value < 2**8, true)).to.equal(true);
     expect(result.errorCodes).to.be.an('Array');
+  });
+
+  it('should return an object with startupMelody of default length 128 when startupMelodyLength is not specified', () => {
+    expect(rtttlParse.toBluejayStartupMelody(rtttl).data.length).to.equal(128);
+  });
+  
+  it('should throw an error with startupMelody length is less than 4', () => {
+    let errorThrown = false;
+    try {
+      rtttlParse.toBluejayStartupMelody(rtttl, 2);
+    } catch (e) {
+        errorThrown = true;
+    }
+    expect(errorThrown).to.equal(true);
   });
 
 });
