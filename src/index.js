@@ -67,7 +67,7 @@ static parse(rtttl) {
 static toBluejayStartupMelody(rtttl, startupMelodyLength) {
 
   let parsedData = Rtttl.parse(rtttl);
-  startupMelodyLength = startupMelodyLength || 128;
+  startupMelodyLength = (typeof startupMelodyLength === 'number')? startupMelodyLength : 128;
 
   if (startupMelodyLength < 4) {
     throw new Error('startupMelodyLength is too small to fit a Bluejay Startup Melody');
@@ -82,8 +82,8 @@ static toBluejayStartupMelody(rtttl, startupMelodyLength) {
   let bpm = Math.floor(parsedData.defaults.bpm) % (2**16);
   result[0] = (bpm >> 8) & (2**8 - 1);
   result[1] = (bpm) & (2**8 - 1);
-  result[2] = Math.floor(parsedData.defaults.octave) % (2**8);
-  result[3] = Math.floor(parsedData.defaults.duration) % (2**8);
+  result[2] = Math.floor(parsedData.defaults.octave) % (MAX_ITEM_VALUE);
+  result[3] = Math.floor(parsedData.defaults.duration) % (MAX_ITEM_VALUE);
 
   var currentResultIndex = 4;
   var currentMelodyIndex = 0;
