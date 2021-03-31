@@ -1,6 +1,6 @@
 {
   "name": "bluejay-rtttl-parse",
-  "version": "0.0.0-development",
+  "version": "v2.0.0",
   "description": "Nokia Ring Tone Text Transfer Language (RTTTL) <-> Bluejay ESC startup tunes conversion utility",
   "main": "src/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test": "mocha src/index.test.js --require esm",
     "check-coverage": "c8 --reporter=text --reporter=lcov npm run test",
     "report-coverage": "cat ./coverage/lcov.info | codecov",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release": "semantic-release --prepare && npm publish && semantic-release post",
     "lint": "eslint src/index.js"
   },
   "repository": {
@@ -43,12 +43,12 @@
     "semantic-release": "^17.4.2",
     "sinon": "^10.0.0"
   },
-  "czConfig": {
-    "path": "node_modules/cz-conventional-changelog"
-  },
   "config": {
     "ghooks": {
       "pre-commit": "npm run lint && npm run check-coverage"
+    },
+    "commitzen": {
+      "path": "node_modules/cz-conventional-changelog"
     }
   }
 }
