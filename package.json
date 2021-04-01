@@ -1,6 +1,6 @@
 {
   "name": "bluejay-rtttl-parse",
-  "version": "v2.0.0",
+  "version": "v2.0.1",
   "description": "Nokia Ring Tone Text Transfer Language (RTTTL) <-> Bluejay ESC startup tunes conversion utility",
   "main": "src/index.js",
   "scripts": {
