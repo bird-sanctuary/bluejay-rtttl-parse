@@ -164,7 +164,7 @@ static fromBluejayStartupMelody(startupMelodyData, melodyName) {
   melodyName = melodyName || 'Melody';
 
   if (startupMelodyData.length < 4) {
-    return melodyName + 'Melody:d=1,o=4,bpm=100:';
+    return melodyName + 'Melody:d=1,o=4,b=100:';
   }
 
   let defaults = {
@@ -223,7 +223,7 @@ static fromBluejayStartupMelody(startupMelodyData, melodyName) {
     }
   }
 
-  return melodyName + ':b='+defaults.bpm+',o='+defaults.octave+',b=' + defaults.duration +':' + melodyString.replace(/,$/, '');
+  return melodyName + ':b='+defaults.bpm+',o='+defaults.octave+',d=' + defaults.duration +':' + melodyString.replace(/,$/, '');
 }
 
 
