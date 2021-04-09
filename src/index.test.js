@@ -192,7 +192,18 @@ describe('getData', () => {
     expect(rtttlParse.getData('16a', defaults)[0].duration).to.equal(125);
     expect(rtttlParse.getData('16a.', defaults)[0].duration).to.equal(187.5);
     expect(rtttlParse.getData('32a', defaults)[0].duration).to.equal(62.5);
-    expect(rtttlParse.getData('32a.', defaults)[0].duration).to.equal(93.75);
+    expect(rtttlParse.getData('32a.', defaults)[0].duration).to.equal(62.5*1.5);
+    expect(rtttlParse.getData('32a..', defaults)[0].duration).to.equal(62.5*1.75);
+    expect(rtttlParse.getData('32a...', defaults)[0].duration).to.equal(62.5*1.875);
+    expect(rtttlParse.getData('32a....', defaults)[0].duration).to.equal(62.5*1.9375);
+    expect(rtttlParse.getData('32a.#', defaults)[0].duration).to.equal(62.5*1.5);
+    expect(rtttlParse.getData('32a..#', defaults)[0].duration).to.equal(62.5*1.75);
+    expect(rtttlParse.getData('32a...#', defaults)[0].duration).to.equal(62.5*1.875);
+    expect(rtttlParse.getData('32a....#', defaults)[0].duration).to.equal(62.5*1.9375);
+    expect(rtttlParse.getData('32a#.', defaults)[0].duration).to.equal(62.5*1.5);
+    expect(rtttlParse.getData('32a#..', defaults)[0].duration).to.equal(62.5*1.75);
+    expect(rtttlParse.getData('32a#...', defaults)[0].duration).to.equal(62.5*1.875);
+    expect(rtttlParse.getData('32a#....', defaults)[0].duration).to.equal(62.5*1.9375);
   });
 
   it('should treat b and h as the same note', () => {
@@ -251,12 +262,53 @@ describe('toBluejayStartupMelody', () => {
 
 describe('fromBluejayStartupMelody', () => {
 
-  const rtttl="Melody:b=112,o=5,d=4:32c,8d.,16f.,16p.,8f,32d,16e.,8d,8c,8a4,8d.,16g.,16p.,8g";
-
   it('should return an object with startupMelody and errorCodes as members', () => {
-    let result = rtttlParse.fromBluejayStartupMelody(rtttlParse.toBluejayStartupMelody(rtttl).data);
-    expect(result).to.be.an('string');
-    expect(result.split(':')[2]).to.equal(rtttl.split(':')[2]);
+    let melodies = [
+        "a:d=4,o=5,b=40:16g3.,32g3.,32g3.,16g3.,32f#.,32g.,32g.,16a3.,32g#.,32g#.,32a.,32a.,16g.,32g.,32g.,32g.,32g.,32f#.,32d#4.,32g.,32g.,16c4.,32a3.,8p.,32g.,32g.,32g3.,32g3.,32g3.,32f#.,32g.,32g.,32g.,16a4.,32b.,32b.,32a.,32a3.,32g.,32g.,16g.,32g.,32g.,16a.,32g.",
+        "b:d=4,o=5,b=40:16g.,32g.,32g.,16d.,32a3.,32b3.,32b3.,16a.,32b.,32b.,32c4.,32c4.,16e.,32c.,32d6.,32b.,32d4.,32d4.,32f#.,32e4.,32d4.,16e.,32d.,8p.,32g4.,32g4.,32g.,32g.,32g.,32a3.,32a.,32b3.,32e4.,16e.,32g#4.,32g#4.,32c.,32c.,32b4.,32c.,16d.,32b.,32d4.,16f#.,32e4.",
+        "c:d=4,o=5,b=40:16g4.,32d.6,32b.,16g.,32a.,32d.,32d.,16e.,32b3.,32b3.,32e.,32e.,16e4.,32c4.,32b3.,32c4.,32b.,32c.,32a.,32b.4,32b.4,16c.,32f#4.,8p.,32b3.,32a3.,32b4.,32b.,32b.,32a.,32b3.,32d.,32b4.,16c6.,32e.,32e.,32e.,32a.,32c4.,32c4.,16d6.,32c4.,32b.,16c.",
+        "d:d=4,o=5,b=40:16g4.,32b.4,32d.,16b.,32d.,32d.,32d.,16c6.,32d.,32d.,32e.,32e.,16c.,32e.,32d.,32d.,32d.,32a.,32c.,32e.,32e.,16g4.,32a4.,8p.,32d.,32d.,32d6.,32d.,32d.,32d.,32d.,32d.,32e.,16c6.,32d.,32d.,32a4.,32e.,32e.,32e.,16b3.,32d.,32d.,16d#4.,32e.",
+        "Melody:b=112,o=5,d=4:32c,8d.,16f.,16p.,8f,32d,16e.,8d,8c,8a4,8d.,16g.,16p.,8g"
+    ];
+    for (var rtttl of melodies) {
+        let startupMelody = rtttlParse.toBluejayStartupMelody(rtttl);
+        let result = rtttlParse.fromBluejayStartupMelody(startupMelody.data);
+        expect(result).to.be.an('string');
+        expect(result.split(':')[2].length).to.equal(rtttl.split(':')[2].length);
+    }
+  });
+
+  it('should store the correct metadata', () => {
+    let rtttl = "Melody:b=112,o=5,d=4:32c,8d.,16f.,16p.,8f,32d,16e.,8d,8c,8a4,8d.,16g.,16p.,8g";
+    let result = rtttlParse.toBluejayStartupMelody(rtttl).data;
+    expect(result[0]).to.equal(0);
+    expect(result[1]).to.equal(112);
+    expect(result[2]).to.equal(5);
+    expect(result[3]).to.equal(4);
+  });
+
+  it('should return correct number of dotted notes', () => {
+    const ALLOWED_BPM = [
+      '25', '28', '31', '35', '40', '45', '50', '56', '63', '70', '80', '90', '100',
+      '112', '125', '140', '160', '180', '200', '225', '250', '285', '320', '355',
+      '400', '450', '500', '565', '635', '715', '800', '900'
+    ];
+
+    for (var bpm of ALLOWED_BPM) {
+      for (var o of [4, 5, 6, 7]) {
+        for (var d of [1, 2, 4, 8, 16, 32]) {
+          for (var s of ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b', 'p']) {
+            for (var dots of ['', '.']) {
+              const rtttl = "Melody:b=" + bpm + ",o=" + o + ",d=" + d + ":" + s + dots;
+              const startupMelody = rtttlParse.toBluejayStartupMelody(rtttl);
+              if (startupMelody.errorCodes.every((v) => v === 0)) {
+                expect(rtttlParse.fromBluejayStartupMelody(startupMelody.data)).to.equal(rtttl);
+              }
+            }
+          }
+        }
+      }
+    }
   });
 
 });
